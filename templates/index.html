@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doma password service</title>
+
+    <style>
+        form {
+            display: flex;
+            flex-direction: column;
+
+            input {
+                height: 2em;
+                border: 1px solid black;
+                border-radius: 5px;
+                outline: none;
+            }
+
+            .pwd:valid { border: 1px solid green; }
+            .pwd:invalid { border: 1px solid red; }
+        }
+
+        .form-container {
+            display: block;
+            width: 25%;
+            min-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Doma passwd service</h1>
+    <p>Use this webform to change your password</p>
+    {% if errmsg != None %}
+    <p style="color: red">{{ errmsg }}</p>
+    {% endif %}
+    {% if successmsg != None %}
+    <p style="color: green">{{ successmsg }}</p>
+    {% endif %}
+    <div class="form-container">
+        <form method="POST">
+            <label for="username">Username:</label>
+            <input type="text" name="username" required>
+            <label for="currentPassword">Current password:</label>
+            <input type="password" name="currentPassword" required>
+            <label for="newPassword">New password:</label>
+            <input type="password" name="newPassword" class="pwd" pattern="\w{8,}" required>
+            <small>
+                The password must: <br>
+                - be at least 8 characters long<br>
+                - may only contain alphanumeric characters
+            </small>
+            <label for="confirmPassword" name="">Confirm password:</label>
+            <input type="password" class="pwd" id="confirmPassword" required>
+            <small>
+                Passwords must match
+            </small>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="submit" value="Change password">
+        </form>
+        <script type="text/javascript">
+            document.querySelector("#confirmPassword")
+                .addEventListener("input", (e) => {
+                    let pwdField = document.querySelector(`input[name="newPassword"]`)
+                    let confirmField = document.querySelector("#confirmPassword")
+                    confirmField.setCustomValidity(e.target.value == pwdField.value ? "" : "Invalid password")
+                })
+        </script>
+    </div>
+</body>
+</html>
