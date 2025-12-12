@@ -1,4 +1,5 @@
 import os
+from ldap3 import Server, Connection, ALL
 from flask import Flask, render_template, request
 from flask_wtf.csrf import CSRFProtect
 
@@ -16,4 +17,20 @@ def post_pwd_change():
     currentPassword = request.form['currentPassword']
     newPassword = request.form['newPassword']
 
-    return render_template('index.html', successmsg="Password changed successfully, you can login to services with new password!")
+    try:
+        try:
+            server = Server('127.0.0.1', port=3389, get_info=ALL)
+        except Exception as e:
+            print(e)
+            return render_template('index.html', errmsg="Internal server error"), 500
+
+        # TODO: Replace it with a template read from dotenv and do escaping
+        dn = f"uid={username},ou=people,dc=nyaa,dc=ee"
+        conn = Connection(server, user=dn, password=currentPassword, auto_bind=True)
+        if not conn.bind():
+            return render_template('index.html', errmsg="Internal server error"), 500
+        conn.extend.standard.modify_password(dn, currentPassword, newPassword)
+        return render_template('index.html', successmsg="Password changed successfully, you can login to services with new password!")
+    except Exception as e:
+        print(e)
+        return render_template('index.html', errmsg="Invalid username or password"), 400
