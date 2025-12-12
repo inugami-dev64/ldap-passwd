@@ -29,7 +29,7 @@
     </style>
 </head>
 <body>
-    <h1>Doma passwd service</h1>
+    <h1>🏠 Doma passwd service</h1>
     <p>Use this webform to change your password</p>
     {% if errmsg != None %}
     <p style="color: red">{{ errmsg }}</p>
@@ -44,11 +44,10 @@
             <label for="currentPassword">Current password:</label>
             <input type="password" name="currentPassword" required>
             <label for="newPassword">New password:</label>
-            <input type="password" name="newPassword" class="pwd" pattern="\w{8,}" required>
+            <input type="password" name="newPassword" class="pwd" pattern="[^\s]{8,}" required>
             <small>
                 The password must: <br>
                 - be at least 8 characters long<br>
-                - may only contain alphanumeric characters
             </small>
             <label for="confirmPassword" name="">Confirm password:</label>
             <input type="password" class="pwd" id="confirmPassword" required>
